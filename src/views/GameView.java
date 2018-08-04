@@ -1,17 +1,24 @@
 package views;
 
+import models.Cell;
+import models.Figure;
+import models.Game;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GameView {
 
-    public XOButton[][] buttons = new XOButton[3][3];
+    private CellButton[][] buttons = new CellButton[3][3];
+    private Game game;
+    private Game mGame;
+    private JFrame frame;
 
-    public GameView() {
+    public GameView(Game game) {
 
-        JFrame frame = new JFrame("Крестики-нолики");
+        this.game = game;
+
+        frame = new JFrame("Крестики-нолики");
 
         frame.setSize(400, 400);
 
@@ -23,24 +30,42 @@ public class GameView {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                XOButton button = new XOButton(""+i+","+j);
-                button.setXY(i, j);
+                CellButton button = new CellButton(i, j, game, this);
+                // button.setXY(i, j);
                 frame.add(button);
                 buttons[i][j] = button;
-
-                button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        //int x = button.getX();
-                        //int y = button.getY();
-                        //System.out.println("" + x + "; " + y);
-                    }
-                });
-
             }
         }
 
+        updateField();
+
         frame.setVisible(true);
 
+
     }
+
+    void updateField() {
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Cell cell = game.getField().getCells()[i][j];
+                Figure figure = cell.getFigure();
+                if (figure == null) {
+                    buttons[i][j].setText("");
+                } else {
+                    buttons[i][j].setText(figure.toString());
+                }
+            }
+        }
+
+        if (game.getWinner()!=null) {
+            frame.setTitle("Winner: " + game.getWinner());
+        } else if (!game.getField().thereAreFreeCells()) {
+            frame.setTitle("Ничья!");
+        } else {
+            frame.setTitle("Сейчас ходит " + game.getCurrentPlayer());
+        }
+
+    }
+
 }
