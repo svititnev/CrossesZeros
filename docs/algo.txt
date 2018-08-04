@@ -1,7 +1,2 @@
 Начало игры
 
-ОбнулитьПоле()
-
-Game.HostFigure = X
-
-if host = X
